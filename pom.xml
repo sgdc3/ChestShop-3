@@ -42,7 +42,7 @@
             <url>file://${project.basedir}/repo/</url>
         </repository>
     </repositories>
-
+    
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -50,8 +50,14 @@
             <version>4.12</version>
             <scope>test</scope>
             <optional>true</optional>
+            <exclusions>
+            	<exclusion>
+            		<artifactId>hamcrest-core</artifactId>
+            		<groupId>org.hamcrest</groupId>
+            	</exclusion>
+            </exclusions>
         </dependency>
-
+        
         <dependency>
             <groupId>com.j256.ormlite</groupId>
             <artifactId>ormlite-jdbc</artifactId>
@@ -59,15 +65,25 @@
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
-
+        
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
             <version>1.9.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
             <optional>true</optional>
+            <exclusions>
+            	<exclusion>
+            		<artifactId>json-simple</artifactId>
+            		<groupId>com.googlecode.json-simple</groupId>
+            	</exclusion>
+            	<exclusion>
+            		<artifactId>gson</artifactId>
+            		<groupId>com.google.code.gson</groupId>
+            	</exclusion>
+            </exclusions>
         </dependency>
-
+        
         <dependency>
             <groupId>org.mcstats.bukkit</groupId>
             <artifactId>metrics</artifactId>
@@ -75,7 +91,7 @@
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
-
+        
         <dependency>
             <groupId>net.milkbowl.vault</groupId>
             <artifactId>Vault</artifactId>
@@ -83,7 +99,7 @@
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
-
+        
         <dependency>
             <groupId>info.somethingodd</groupId>
             <artifactId>odditem</artifactId>
@@ -91,7 +107,6 @@
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
-
         
         <dependency>
             <groupId>com.herocraftonline.heroes</groupId>
@@ -99,8 +114,22 @@
             <version>1.5.5.6-SNAPSHOT</version>
             <scope>provided</scope>
             <optional>true</optional>
+            <exclusions>
+            	<exclusion>
+            		<artifactId>HeroChat</artifactId>
+            		<groupId>com.dthielke.herochat</groupId>
+            	</exclusion>
+            	<exclusion>
+            		<artifactId>scrollingmenusign</artifactId>
+            		<groupId>me.desht</groupId>
+            	</exclusion>
+            	<exclusion>
+            		<artifactId>Vault</artifactId>
+            		<groupId>net.milkbowl.vault</groupId>
+            	</exclusion>
+            </exclusions>
         </dependency>
-
+        
         <dependency>
             <groupId>fr.xephi</groupId>
             <artifactId>authme</artifactId>
@@ -116,7 +145,7 @@
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
-
+        
         <dependency>
             <groupId>com.daemitus.deadbolt</groupId>
             <artifactId>deadbolt</artifactId>
@@ -124,15 +153,57 @@
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
-
+        
         <dependency>
             <groupId>com.sk89q</groupId>
             <artifactId>worldguard</artifactId>
             <version>6.1.1-SNAPSHOT</version>
             <scope>provided</scope>
             <optional>true</optional>
+            <exclusions>
+            	<exclusion>
+            		<artifactId>truezip</artifactId>
+            		<groupId>de.schlichtherle</groupId>
+            	</exclusion>
+            	<exclusion>
+            		<artifactId>js</artifactId>
+            		<groupId>rhino</groupId>
+            	</exclusion>
+            	<exclusion>
+            		<artifactId>jchronic</artifactId>
+            		<groupId>com.sk89q</groupId>
+            	</exclusion>
+            	<exclusion>
+            		<artifactId>json-simple</artifactId>
+            		<groupId>com.googlecode.json-simple</groupId>
+            	</exclusion>
+            	<exclusion>
+            		<artifactId>guava</artifactId>
+            		<groupId>com.google.guava</groupId>
+            	</exclusion>
+            	<exclusion>
+            		<artifactId>commons-lang</artifactId>
+            		<groupId>commons-lang</groupId>
+            	</exclusion>
+            	<exclusion>
+            		<artifactId>commandbook</artifactId>
+            		<groupId>com.sk89q</groupId>
+            	</exclusion>
+            	<exclusion>
+            		<artifactId>bukkit-classloader-check</artifactId>
+            		<groupId>com.sk89q.spigot</groupId>
+            	</exclusion>
+            	<exclusion>
+            		<artifactId>bukkit</artifactId>
+            		<groupId>org.bukkit</groupId>
+            	</exclusion>
+            	<exclusion>
+            		<artifactId>jsr305</artifactId>
+            		<groupId>com.google.code.findbugs</groupId>
+            	</exclusion>
+            </exclusions>
         </dependency>
-
+        
         <dependency>
             <groupId>com.webkonsept.bukkit.simplechestlock</groupId>
             <artifactId>simplechestlock</artifactId>
@@ -140,7 +211,7 @@
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
-
+        
         <dependency>
             <groupId>org.yi.acru.bukkit.lockette</groupId>
             <artifactId>lockette</artifactId>
@@ -148,7 +219,7 @@
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
-
+        
         <dependency>
             <groupId>net.t00thpick1</groupId>
             <artifactId>residence</artifactId>
@@ -157,7 +228,7 @@
             <optional>true</optional>
         </dependency>
     </dependencies>
-
+    
     <build>
         <finalName>${project.name}-${project.version}</finalName>
         <resources>
