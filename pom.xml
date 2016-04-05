@@ -50,13 +50,16 @@
             <version>4.12</version>
             <scope>test</scope>
             <optional>true</optional>
-            <exclusions>
-            	<exclusion>
-            		<artifactId>hamcrest-core</artifactId>
-            		<groupId>org.hamcrest</groupId>
-            	</exclusion>
-            </exclusions>
         </dependency>
+        
+        <!-- Nullable Class Provider -->
+        <dependency>
+		    <groupId>com.google.code.findbugs</groupId>
+		    <artifactId>jsr305</artifactId>
+		    <version>3.0.1</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+		</dependency>
         
         <dependency>
             <groupId>com.j256.ormlite</groupId>
@@ -261,10 +264,6 @@
                                 <relocation>
                                     <pattern>org.mcstats</pattern>
                                     <shadedPattern>com.Acrobot.ChestShop</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>com.j256.ormlite</pattern>
-                                    <shadedPattern>com.Acrobot.ChestShop.ORMlite</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
