@@ -21,8 +21,7 @@ import com.j256.ormlite.dao.Dao;
  *
  * @author Andrzej Pomirski (Acrobot)
  */
-@SuppressWarnings("UnusedAssignment")
-// I deliberately set the variables to null while initializing
+
 public class NameManager {
     private static Dao<Account, String> accounts;
     private static Dao<Account2, String> accounts2;
