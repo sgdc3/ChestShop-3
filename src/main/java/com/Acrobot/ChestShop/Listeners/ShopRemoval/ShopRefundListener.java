@@ -1,23 +1,24 @@
 package com.Acrobot.ChestShop.Listeners.ShopRemoval;
 
-import com.Acrobot.ChestShop.ChestShop;
-import com.Acrobot.ChestShop.Configuration.Messages;
-import com.Acrobot.ChestShop.Configuration.Properties;
-import com.Acrobot.ChestShop.Economy.Economy;
-import com.Acrobot.ChestShop.Events.Economy.CurrencyAddEvent;
-import com.Acrobot.ChestShop.Events.Economy.CurrencySubtractEvent;
-import com.Acrobot.ChestShop.Events.ShopDestroyedEvent;
-import com.Acrobot.ChestShop.Permission;
-import com.Acrobot.ChestShop.UUIDs.NameManager;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
+import static com.Acrobot.ChestShop.Permission.NOFEE;
+import static com.Acrobot.ChestShop.Signs.ChestShopSign.NAME_LINE;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
-import static com.Acrobot.ChestShop.Permission.NOFEE;
-import static com.Acrobot.ChestShop.Signs.ChestShopSign.NAME_LINE;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+
+import com.Acrobot.ChestShop.ChestShop;
+import com.Acrobot.ChestShop.Permission;
+import com.Acrobot.ChestShop.Configuration.Messages;
+import com.Acrobot.ChestShop.Configuration.Properties;
+import com.Acrobot.ChestShop.Economy.Economy;
+import com.Acrobot.ChestShop.Events.ShopDestroyedEvent;
+import com.Acrobot.ChestShop.Events.Economy.CurrencyAddEvent;
+import com.Acrobot.ChestShop.Events.Economy.CurrencySubtractEvent;
+import com.Acrobot.ChestShop.UUIDs.NameManager;
 
 /**
  * @author Acrobot
@@ -31,17 +32,13 @@ public class ShopRefundListener implements Listener {
             return;
         }
 
-        String ownerName = NameManager.getFullUsername(event.getSign().getLine(NAME_LINE));
-        UUID owner = NameManager.getUUID(ownerName);
+        UUID owner = NameManager.getUUIDFor(event.getSign().getLine(NAME_LINE));
 
         CurrencyAddEvent currencyEvent = new CurrencyAddEvent(BigDecimal.valueOf(refundPrice), owner, event.getSign().getWorld());
         ChestShop.callEvent(currencyEvent);
 
         if (!Economy.getServerAccountName().isEmpty()) {
-            CurrencySubtractEvent currencySubtractEvent = new CurrencySubtractEvent(
-                    BigDecimal.valueOf(refundPrice),
-                    NameManager.getUUID(Economy.getServerAccountName()),
-                    event.getSign().getWorld());
+            CurrencySubtractEvent currencySubtractEvent = new CurrencySubtractEvent(BigDecimal.valueOf(refundPrice), NameManager.getServerAccountUUID(), event.getSign().getWorld());
             ChestShop.callEvent(currencySubtractEvent);
         }
 

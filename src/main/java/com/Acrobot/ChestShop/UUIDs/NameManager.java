@@ -1,245 +1,170 @@
 package com.Acrobot.ChestShop.UUIDs;
 
-import com.Acrobot.Breeze.Utils.NameUtil;
-import com.Acrobot.ChestShop.Configuration.Properties;
-import com.Acrobot.ChestShop.Database.Account;
-import com.Acrobot.ChestShop.Database.DaoCreator;
-import com.Acrobot.ChestShop.Permission;
-import com.Acrobot.ChestShop.Signs.ChestShopSign;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.j256.ormlite.dao.Dao;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import org.bukkit.entity.Player;
+
+import com.Acrobot.ChestShop.ChestShop;
+import com.Acrobot.ChestShop.Configuration.Properties;
+import com.Acrobot.ChestShop.Database.Account;
+import com.Acrobot.ChestShop.Database.Account2;
+import com.Acrobot.ChestShop.Database.DaoCreator;
+import com.Acrobot.ChestShop.Database.PlayerName;
+import com.Acrobot.ChestShop.Signs.ChestShopSign;
+import com.j256.ormlite.dao.Dao;
 
 /**
  * Lets you save/cache username and UUID relations
  *
  * @author Andrzej Pomirski (Acrobot)
  */
-@SuppressWarnings("UnusedAssignment") //I deliberately set the variables to null while initializing
+@SuppressWarnings("UnusedAssignment")
+// I deliberately set the variables to null while initializing
 public class NameManager {
     private static Dao<Account, String> accounts;
+    private static Dao<Account2, String> accounts2;
+    private static Dao<PlayerName, String> playerNames;
 
-    private static Map<UUID, String> lastSeenName = new HashMap<UUID, String>();
-    private static BiMap<String, UUID> usernameToUUID = HashBiMap.create();
-    private static Map<String, String> shortToLongName = new HashMap<String, String>();
+    private static Map<String, UUID> usedShortNames = new HashMap<String, UUID>();
+    private static Map<UUID, String> currentShortName = new HashMap<UUID, String>();
+    private static Map<UUID, String> lastSeenFullName = new HashMap<UUID, String>();
 
-    public static String getLastSeenName(UUID uuid) {
-        if (lastSeenName.containsKey(uuid)) {
-            return lastSeenName.get(uuid);
-        }
+    private static UUID adminShopUUID;
+    private static UUID serverAccountUUID;
 
-        if (Bukkit.getOfflinePlayer(uuid).getName() != null) {
-            String lastSeen = Bukkit.getOfflinePlayer(uuid).getName();
-
-            lastSeenName.put(uuid, lastSeen);
-            return lastSeen;
-        }
-
-        Account account = null;
-
-        try {
-            account = accounts.queryBuilder().selectColumns("lastSeenName", "name").where().eq("uuid", uuid).queryForFirst();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
-
-        if (account == null) {
-            return "";
-        }
-
-        if (account.getLastSeenName() != null) {
-            lastSeenName.put(uuid, account.getLastSeenName());
-        } else if (account.getName() != null) {
-            lastSeenName.put(uuid, account.getName());
-        }
-
-        return account.getLastSeenName();
+    public static String getNameFor(Player player) {
+        return currentShortName.get(player.getUniqueId());
     }
 
-    public static UUID getUUID(String username) {
-        if (usernameToUUID.containsKey(username)) {
-            return usernameToUUID.get(username);
-        }
-
-        String shortenedName = NameUtil.stripUsername(username);
-
-        Account account = null;
-
-        try {
-            account = accounts.queryBuilder().selectColumns("uuid").where().eq("shortName", shortenedName).queryForFirst();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
-
-        if (account == null) {
-            return Bukkit.getOfflinePlayer(username).getUniqueId();
-        }
-
-        UUID uuid = account.getUuid();
-
-        if (uuid != null && !usernameToUUID.containsValue(uuid)) {
-            usernameToUUID.put(account.getName(), uuid);
-        }
-
-        return uuid;
-    }
-
-    public static String getUsername(UUID uuid) {
-        if (usernameToUUID.containsValue(uuid)) {
-            return usernameToUUID.inverse().get(uuid);
-        }
-
-        Account account = null;
-
-        try {
-            account = accounts.queryBuilder().selectColumns("name").where().eq("uuid", uuid).queryForFirst();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
-
-        if (account == null) {
-            String name = Bukkit.getOfflinePlayer(uuid).getName();
-
-            if (name != null) {
-                usernameToUUID.put(name, uuid);
-                return name;
-            }
-
-            return "";
-        }
-
-        String name = account.getName();
-
-        if (name != null) {
-            usernameToUUID.put(name, uuid);
-        }
-
-        return name;
-    }
-
-    public static String getFullUsername(String username) {
-        if (ChestShopSign.isAdminShop(username)) {
+    public static String getFullNameFor(UUID playerId) {
+        if (isAdminShop(playerId)) {
             return Properties.ADMIN_SHOP_NAME;
         }
-
-        String shortName = NameUtil.stripUsername(username);
-
-        if (shortToLongName.containsKey(shortName)) {
-            return shortToLongName.get(shortName);
+        if (isServerAccount(playerId)) {
+            return Properties.SERVER_ECONOMY_ACCOUNT;
         }
-
-        Account account = null;
-
-        try {
-            account = accounts.queryBuilder().selectColumns("name").where().eq("shortName", shortName).queryForFirst();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
-
-        if (account == null) {
-            return username;
-        }
-
-        String name = account.getName();
-
-        if (name != null) {
-            shortToLongName.put(shortName, name);
-        }
-
-        return name;
+        return lastSeenFullName.get(playerId);
     }
 
-    public static void storeUsername(final PlayerDTO player) {
-        final UUID uuid = player.getUniqueId();
-
-        Account account = null;
-
-        try {
-            account = accounts.queryBuilder().where().eq("uuid", uuid).queryForFirst();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return;
+    public static UUID getUUIDFor(String shortName) {
+        if (Properties.ADMIN_SHOP_NAME.equalsIgnoreCase(shortName)) {
+            return adminShopUUID;
         }
+        if (Properties.SERVER_ECONOMY_ACCOUNT != null && Properties.SERVER_ECONOMY_ACCOUNT.length() > 0 && Properties.SERVER_ECONOMY_ACCOUNT.equals(shortName)) {
+            return serverAccountUUID;
+        }
+        return usedShortNames.get(shortName.toLowerCase());
+    }
 
-        if (account != null) {
-            if (account.getName() != null && account.getShortName() == null) {
-                String shortenedName = NameUtil.stripUsername(account.getName());
+    private static String createUseableShortName(String name, int id) {
+        if (id == 0) {
+            return name.length() > 15 ? name.substring(0, 15) : name;
+        }
+        String idString = Integer.toString(id);
+        int maxLength = 15 - idString.length();
+        return (name.length() > maxLength ? name.substring(0, maxLength) : name) + idString;
+    }
 
-                account.setShortName(shortenedName);
+    public static void storeUsername(final Player player) {
+        final UUID uuid = player.getUniqueId();
+        String name = player.getName();
+        String foundShortName = storeUsername(uuid, name);
+        currentShortName.put(uuid, foundShortName);
+    }
+
+    private static String storeUsername(final UUID uuid, String name) {
+        int id = 0;
+        String foundShortName = null;
+        while (foundShortName == null) {
+            String shortName = createUseableShortName(name, id++);
+            UUID inUse = usedShortNames.get(shortName.toLowerCase());
+            if (inUse == null) {
+                usedShortNames.put(shortName.toLowerCase(), uuid);
+                foundShortName = shortName;
+                try {
+                    accounts2.create(new Account2(foundShortName, uuid));
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            } else if (inUse.equals(uuid)) {
+                foundShortName = shortName;
             }
-
-            account.setUuid(uuid); //HOW IS IT EVEN POSSIBLE THAT UUID IS NOT SET EVEN IF WE HAVE FOUND THE PLAYER?!
-            account.setLastSeenName(player.getName());
-
+        }
+        String storedFullName = lastSeenFullName.put(uuid, name);
+        if (storedFullName == null || !storedFullName.equals(name)) {
             try {
-                accounts.createOrUpdate(account);
+                playerNames.createOrUpdate(new PlayerName(name, uuid));
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-
-            return;
         }
-
-        account = new Account(player.getName(), player.getUniqueId());
-
-        if (!usernameToUUID.inverse().containsKey(uuid)) {
-            usernameToUUID.inverse().put(uuid, player.getName());
-        }
-
-        lastSeenName.put(uuid, player.getName());
-
-        try {
-            accounts.createOrUpdate(account);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void dropUsername(final Player player) {
-        final UUID uuid = player.getUniqueId();
-
-        if (usernameToUUID.containsValue(uuid)) {
-            usernameToUUID.inverse().remove(uuid);
-        }
-
-        String shortName = NameUtil.stripUsername(player.getName());
-
-        if (shortToLongName.containsKey(shortName)) {
-            shortToLongName.remove(shortName);
-        }
+        return foundShortName;
     }
 
     public static boolean canUseName(Player player, String name) {
-        String shortenedName = NameUtil.stripUsername(getUsername(player.getUniqueId()));
-
         if (ChestShopSign.isAdminShop(name)) {
             return false;
         }
-
-        return shortenedName.equals(name) || Permission.otherName(player, name) || player.getUniqueId().equals(getUUID(name));
+        UUID inUse = usedShortNames.get(name.toLowerCase());
+        return inUse != null && inUse.equals(player.getUniqueId());
     }
 
     public static boolean isAdminShop(UUID uuid) {
-        return Properties.ADMIN_SHOP_NAME.equals(getUsername(uuid));
+        return adminShopUUID.equals(uuid);
+    }
+
+    public static UUID getAdminShopUUID() {
+        return adminShopUUID;
+    }
+
+    public static boolean isServerAccount(UUID uuid) {
+        return serverAccountUUID.equals(uuid);
+    }
+
+    public static UUID getServerAccountUUID() {
+        return serverAccountUUID;
     }
 
     public static void load() {
+        adminShopUUID = UUID.nameUUIDFromBytes(("ChestShop-Adminshop").getBytes());
+        serverAccountUUID = UUID.nameUUIDFromBytes(("ChestShop-ServerAccount").getBytes());
         try {
             accounts = DaoCreator.getDaoAndCreateTable(Account.class);
 
-            Account adminAccount = new Account(Properties.ADMIN_SHOP_NAME, Bukkit.getOfflinePlayer(Properties.ADMIN_SHOP_NAME).getUniqueId());
-            accounts.createOrUpdate(adminAccount);
+            // Account adminAccount = new Account(Properties.ADMIN_SHOP_NAME, Bukkit.getOfflinePlayer(Properties.ADMIN_SHOP_NAME).getUniqueId());
+            // accounts.createOrUpdate(adminAccount);
+
+            accounts2 = DaoCreator.getDaoAndCreateTable(Account2.class);
+
+            playerNames = DaoCreator.getDaoAndCreateTable(PlayerName.class);
+
+            for (PlayerName pn : playerNames.queryForAll()) {
+                lastSeenFullName.put(pn.getUuid(), pn.getFullName());
+            }
+            for (Account2 a : accounts2.queryForAll()) {
+                UUID id = a.getUuid();
+                String name = a.getShortName();
+                usedShortNames.put(name.toLowerCase(), id);
+            }
+
+            // import old data
+            for (Account a : accounts.queryForAll()) {
+                UUID id = a.getUuid();
+                String name = a.getName();
+                String name2 = a.getLastSeenName();
+                if (name != null && !name.equalsIgnoreCase(Properties.ADMIN_SHOP_NAME)) {
+                    ChestShop.getBukkitLogger().info("Importing " + name + " (" + id + ")...");
+                    storeUsername(id, name);
+                }
+                if (name2 != null && !name2.equals(name) && !name2.equalsIgnoreCase(Properties.ADMIN_SHOP_NAME)) {
+                    ChestShop.getBukkitLogger().info("Importing " + name2 + " (" + id + ")...");
+                    storeUsername(id, name2);
+                }
+            }
+            accounts.deleteBuilder().delete();
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -1,16 +1,17 @@
 package com.Acrobot.ChestShop.Listeners.Economy;
 
+import java.math.BigDecimal;
+import java.util.UUID;
+
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+
 import com.Acrobot.ChestShop.ChestShop;
 import com.Acrobot.ChestShop.Configuration.Properties;
 import com.Acrobot.ChestShop.Economy.Economy;
 import com.Acrobot.ChestShop.Events.Economy.CurrencyAddEvent;
 import com.Acrobot.ChestShop.UUIDs.NameManager;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-
-import java.math.BigDecimal;
-import java.util.UUID;
 
 /**
  * @author Acrobot
@@ -33,7 +34,7 @@ public class TaxModule implements Listener {
 
         UUID target = event.getTarget();
 
-        if (NameManager.getUsername(target).equals(Economy.getServerAccountName())) {
+        if (NameManager.isServerAccount(target)) {
             return;
         }
 
@@ -46,7 +47,7 @@ public class TaxModule implements Listener {
         BigDecimal tax = getTax(event.getAmount(), taxAmount);
 
         if (!Economy.getServerAccountName().isEmpty()) {
-            CurrencyAddEvent currencyAddEvent = new CurrencyAddEvent(tax, NameManager.getUUID(Economy.getServerAccountName()), event.getWorld());
+            CurrencyAddEvent currencyAddEvent = new CurrencyAddEvent(tax, NameManager.getServerAccountUUID(), event.getWorld());
             ChestShop.callEvent(currencyAddEvent);
         }
 

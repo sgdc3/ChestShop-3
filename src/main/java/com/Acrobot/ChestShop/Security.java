@@ -1,24 +1,26 @@
 package com.Acrobot.ChestShop;
 
-import com.Acrobot.Breeze.Utils.BlockUtil;
-import com.Acrobot.Breeze.Utils.NameUtil;
-import com.Acrobot.ChestShop.Configuration.Properties;
-import com.Acrobot.ChestShop.Events.Protection.ProtectBlockEvent;
-import com.Acrobot.ChestShop.Events.Protection.ProtectionCheckEvent;
-import com.Acrobot.ChestShop.Signs.ChestShopSign;
-import com.Acrobot.ChestShop.UUIDs.NameManager;
+import java.util.UUID;
+
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
+import com.Acrobot.Breeze.Utils.BlockUtil;
+import com.Acrobot.ChestShop.Configuration.Properties;
+import com.Acrobot.ChestShop.Events.Protection.ProtectBlockEvent;
+import com.Acrobot.ChestShop.Events.Protection.ProtectionCheckEvent;
+import com.Acrobot.ChestShop.Signs.ChestShopSign;
+import com.Acrobot.ChestShop.UUIDs.NameManager;
+
 /**
  * @author Acrobot
  */
 public class Security {
-    private static final BlockFace[] SIGN_CONNECTION_FACES = {BlockFace.UP, BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH, BlockFace.SOUTH};
-    private static final BlockFace[] BLOCKS_AROUND = {BlockFace.UP, BlockFace.DOWN, BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH, BlockFace.SOUTH};
+    private static final BlockFace[] SIGN_CONNECTION_FACES = { BlockFace.UP, BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH, BlockFace.SOUTH };
+    private static final BlockFace[] BLOCKS_AROUND = { BlockFace.UP, BlockFace.DOWN, BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH, BlockFace.SOUTH };
 
     public static boolean protect(Player player, Block block) {
         ProtectBlockEvent event = new ProtectBlockEvent(block, player);
@@ -64,9 +66,6 @@ public class Security {
     }
 
     private static boolean anotherShopFound(Block baseBlock, Block signBlock, Player player) {
-        String playerName = NameManager.getUsername(player.getUniqueId());
-        String shortName = NameUtil.stripUsername(playerName);
-
         for (BlockFace face : SIGN_CONNECTION_FACES) {
             Block block = baseBlock.getRelative(face);
 
@@ -80,7 +79,8 @@ public class Security {
                 continue;
             }
 
-            if (!sign.getLine(ChestShopSign.NAME_LINE).equals(shortName)) {
+            UUID existingSignUUID = NameManager.getUUIDFor(sign.getLine(ChestShopSign.NAME_LINE));
+            if (existingSignUUID == null || !existingSignUUID.equals(player.getUniqueId())) {
                 return true;
             }
         }

@@ -1,5 +1,11 @@
 package com.Acrobot.ChestShop.Containers;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ListIterator;
+
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryType;
@@ -7,15 +13,15 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ListIterator;
-
 /**
  * @author Acrobot
  */
 public class AdminInventory implements Inventory {
+    @Override
+    public Location getLocation() {
+        return null;
+    }
+
     public int getSize() {
         return Integer.MAX_VALUE;
     }
@@ -47,10 +53,16 @@ public class AdminInventory implements Inventory {
     }
 
     public ItemStack[] getContents() {
-        return new ItemStack[]{
-                new ItemStack(Material.CHEST, 1),
-                new ItemStack(Material.AIR, Integer.MAX_VALUE)
-        };
+        return new ItemStack[] { new ItemStack(Material.CHEST, 1), new ItemStack(Material.AIR, Integer.MAX_VALUE) };
+    }
+
+    @Override
+    public ItemStack[] getStorageContents() {
+        return getContents();
+    }
+
+    @Override
+    public void setStorageContents(ItemStack[] arg0) {
     }
 
     public void setContents(ItemStack[] itemStacks) {

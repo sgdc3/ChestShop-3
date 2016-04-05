@@ -89,7 +89,7 @@ public class InventoryUtil {
             return true;
         }
 
-        for (ItemStack iStack : inventory.getContents()) {
+        for (ItemStack iStack : inventory.getStorageContents()) {
             if (left <= 0) {
                 return true;
             }
@@ -124,8 +124,8 @@ public class InventoryUtil {
         }
 
         int amountLeft = item.getAmount();
-
-        for (int currentSlot = 0; currentSlot < inventory.getSize() && amountLeft > 0; currentSlot++) {
+        int storageStacks = inventory.getStorageContents().length;
+        for (int currentSlot = 0; currentSlot < storageStacks && amountLeft > 0; currentSlot++) {
             ItemStack currentItem = inventory.getItem(currentSlot);
             ItemStack duplicate = item.clone();
 
