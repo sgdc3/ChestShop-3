@@ -90,7 +90,7 @@
         <dependency>
             <groupId>org.mcstats.bukkit</groupId>
             <artifactId>metrics</artifactId>
-            <version>R8-snapshot</version>
+            <version>R8-SNAPSHOT</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
