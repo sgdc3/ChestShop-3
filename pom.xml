@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     
-    <groupId>com.acrobot.chestshop</groupId>
+    <groupId>com.Acrobot.ChestShop</groupId>
     <artifactId>chestshop</artifactId>
     <version>3.8.16-SNAPSHOT</version>
     <packaging>jar</packaging>
@@ -189,11 +189,11 @@
                             <relocations>
                                 <relocation>
                                     <pattern>org.mcstats</pattern>
-                                    <shadedPattern>com.acrobot.chestshop</shadedPattern>
+                                    <shadedPattern>com.Acrobot.ChestShop</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>com.j256.ormlite</pattern>
-                                    <shadedPattern>com.acrobot.chestshop.ormlite</shadedPattern>
+                                    <shadedPattern>com.Acrobot.ChestShop.ORMlite</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
