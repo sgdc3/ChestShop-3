@@ -1,23 +1,24 @@
 package com.Acrobot.ChestShop.Listeners.PostShopCreation;
 
-import com.Acrobot.ChestShop.ChestShop;
-import com.Acrobot.ChestShop.Configuration.Messages;
-import com.Acrobot.ChestShop.Configuration.Properties;
-import com.Acrobot.ChestShop.Economy.Economy;
-import com.Acrobot.ChestShop.Events.Economy.CurrencyAddEvent;
-import com.Acrobot.ChestShop.Events.Economy.CurrencySubtractEvent;
-import com.Acrobot.ChestShop.Events.ShopCreatedEvent;
-import com.Acrobot.ChestShop.Permission;
-import com.Acrobot.ChestShop.Signs.ChestShopSign;
-import com.Acrobot.ChestShop.UUIDs.NameManager;
+import static com.Acrobot.ChestShop.Permission.NOFEE;
+import static com.Acrobot.ChestShop.Signs.ChestShopSign.NAME_LINE;
+
+import java.math.BigDecimal;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import java.math.BigDecimal;
-
-import static com.Acrobot.ChestShop.Permission.NOFEE;
-import static com.Acrobot.ChestShop.Signs.ChestShopSign.NAME_LINE;
+import com.Acrobot.ChestShop.ChestShop;
+import com.Acrobot.ChestShop.Permission;
+import com.Acrobot.ChestShop.Configuration.Messages;
+import com.Acrobot.ChestShop.Configuration.Properties;
+import com.Acrobot.ChestShop.Economy.Economy;
+import com.Acrobot.ChestShop.Events.ShopCreatedEvent;
+import com.Acrobot.ChestShop.Events.Economy.CurrencyAddEvent;
+import com.Acrobot.ChestShop.Events.Economy.CurrencySubtractEvent;
+import com.Acrobot.ChestShop.Signs.ChestShopSign;
+import com.Acrobot.ChestShop.UUIDs.NameManager;
 
 /**
  * @author Acrobot
@@ -46,10 +47,7 @@ public class CreationFeeGetter implements Listener {
         ChestShop.callEvent(subtractionEvent);
 
         if (!Economy.getServerAccountName().isEmpty()) {
-            CurrencyAddEvent currencyAddEvent = new CurrencyAddEvent(
-                    BigDecimal.valueOf(shopCreationPrice),
-                    NameManager.getUUID(Economy.getServerAccountName()),
-                    player.getWorld());
+            CurrencyAddEvent currencyAddEvent = new CurrencyAddEvent(BigDecimal.valueOf(shopCreationPrice), NameManager.getServerAccountUUID(), player.getWorld());
             ChestShop.callEvent(currencyAddEvent);
         }
 

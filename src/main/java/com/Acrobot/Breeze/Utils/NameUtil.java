@@ -1,12 +1,13 @@
 package com.Acrobot.Breeze.Utils;
 
+import java.util.Map;
+import java.util.UUID;
+
+import org.bukkit.entity.Player;
+
 import com.Acrobot.Breeze.Utils.MojangAPI.NameFetcher;
 import com.Acrobot.Breeze.Utils.MojangAPI.UUIDFetcher;
 import com.google.common.collect.ImmutableMap;
-import org.bukkit.entity.Player;
-
-import java.util.Map;
-import java.util.UUID;
 
 /**
  * Provides methods to handle usernames/UUIDs
@@ -19,7 +20,8 @@ public class NameUtil {
     /**
      * Get the UUID of a player
      *
-     * @param player Player whose UUID to get
+     * @param player
+     *            Player whose UUID to get
      * @return The player's UUID
      */
     public static UUID getUUID(Player player) {
@@ -29,7 +31,8 @@ public class NameUtil {
     /**
      * Gets the UUID of a specified username (fetches it from Mojang's servers)
      *
-     * @param username Username whose UUID to get
+     * @param username
+     *            Username whose UUID to get
      * @return UUID of a specified username
      */
     public static UUID getUUID(String username) {
@@ -51,7 +54,8 @@ public class NameUtil {
     /**
      * Gets the UUID of specified usernames (fetches them from Mojang's servers)
      *
-     * @param usernames Usernames whose UUID to get
+     * @param usernames
+     *            Usernames whose UUID to get
      * @return UUID of the specified usernames
      */
     public static Map<String, UUID> getUUID(String... usernames) {
@@ -67,7 +71,8 @@ public class NameUtil {
     /**
      * Fetches a name from UUID from Mojang's servers
      *
-     * @param uuid UUID to check
+     * @param uuid
+     *            UUID to check
      * @return The name associated with an UUID
      */
     public static String getName(UUID uuid) {
@@ -85,7 +90,8 @@ public class NameUtil {
     /**
      * Fetches names from UUIDs
      *
-     * @param uuids UUIDs to check
+     * @param uuids
+     *            UUIDs to check
      * @return Fetched names
      */
     public static Map<UUID, String> getName(UUID... uuids) {
@@ -101,7 +107,8 @@ public class NameUtil {
     /**
      * Check if the UUID is invalid
      *
-     * @param uuid UUID to check
+     * @param uuid
+     *            UUID to check
      * @return Is the UUID invalid?
      */
     public static boolean isInvalid(UUID uuid) {
@@ -111,18 +118,21 @@ public class NameUtil {
     /**
      * Strip the username to 15 characters (number of characters a sign can hold)
      *
-     * @param username Username to strip
+     * @param username
+     *            Username to strip
      * @return Stripped username
      */
-    public static String stripUsername(String username) {
-        return stripUsername(username, 15);
-    }
+    // public static String stripUsername(String username) {
+    // return stripUsername(username, 15);
+    // }
 
     /**
      * Strips the username to a specified number of characters
      *
-     * @param username Username to strip
-     * @param length   Length of the expected username
+     * @param username
+     *            Username to strip
+     * @param length
+     *            Length of the expected username
      * @return Stripped username
      */
     public static String stripUsername(String username, int length) {

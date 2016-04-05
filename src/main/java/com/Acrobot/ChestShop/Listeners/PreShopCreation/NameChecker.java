@@ -1,15 +1,16 @@
 package com.Acrobot.ChestShop.Listeners.PreShopCreation;
 
-import com.Acrobot.Breeze.Utils.NameUtil;
-import com.Acrobot.ChestShop.Events.PreShopCreationEvent;
-import com.Acrobot.ChestShop.Permission;
-import com.Acrobot.ChestShop.UUIDs.NameManager;
+import static com.Acrobot.ChestShop.Signs.ChestShopSign.NAME_LINE;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
-import static com.Acrobot.ChestShop.Signs.ChestShopSign.NAME_LINE;
+import com.Acrobot.ChestShop.Permission;
+import com.Acrobot.ChestShop.Configuration.Properties;
+import com.Acrobot.ChestShop.Events.PreShopCreationEvent;
+import com.Acrobot.ChestShop.UUIDs.NameManager;
 
 /**
  * @author Acrobot
@@ -20,9 +21,12 @@ public class NameChecker implements Listener {
     public static void onPreShopCreation(PreShopCreationEvent event) {
         String name = event.getSignLine(NAME_LINE);
         Player player = event.getPlayer();
-
+        if (Properties.ADMIN_SHOP_NAME.equalsIgnoreCase(name)) {
+            name = Properties.ADMIN_SHOP_NAME;
+            event.setSignLine(NAME_LINE, name);
+        }
         if (name.isEmpty() || (!NameManager.canUseName(player, name) && !Permission.has(player, Permission.ADMIN))) {
-            String shortName = NameUtil.stripUsername(NameManager.getUsername(player.getUniqueId()));
+            String shortName = NameManager.getNameFor(player);
             event.setSignLine(NAME_LINE, shortName);
         }
     }
